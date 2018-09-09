@@ -1,0 +1,29 @@
+- hosts: "{{ hostname }}"
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  connection: ssh
+  gather_facts: False
+  vars:
+    - packages: ["gradle"]
+    - gradle_version: ["4.9"]
+    - download_dir: ["/home/ansible/downloads"]
+    - gradle_zipfile: ["gradle-4.9-all.zip"]
+    - gradle_folder: ["gradle-{{gradle_version}}"]
+  tasks: 
+    - name: Installing {{ packages }} {{ gradle_version }} on {{ hostname }}
+      get_url: dest="/home/ansible/downloads"  url=https://services.gradle.org/distributions/gradle-4.9-all.zip
+      sudo: yes
+      tags: [gradle]
+
+#dest= "{{download_dir}}"
+    - name: Extract Gradle
+      shell: unzip -o "/home/ansible/downloads/gradle-4.9-all.zip" -d /home/ansible/ #creates=/home/ansible/{{gradle_folder}}
+      sudo: yes
+      tags: [gradle]
+
+ 
+#    - name: Add Gradle executable symlink to path
+#      shell: ln -s /home/ansible/{{gradle_folder}}/bin/gradle /home/ansible/bin/gradle #creates=/home/ansible/bin/gradle
+#      sudo: yes
+#      tags: [gradle]
